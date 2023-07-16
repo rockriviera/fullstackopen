@@ -1,36 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-
-const Header = ({ name }) => <h1>{name}</h1>
-
-const Part = ({name, exercises}) => {
-   return ( 
-    <p>
-      {name}: {exercises}
-    </p> )
-}
-const Content = (props) =>{
-  const {parts} = props
-  return(
-  <div>
-    {parts.map(part => 
-      <Part key={part.id} name={part.name} exercises={part.exercises}/>
-    )}
-    <b>
-      total of {parts.reduce((sum,part)=>sum+part.exercises,0)} exercises
-    </b>
-  </div>
-  
-  )
-}
-const Course=({name,parts}) =>{
-  return(
-    <div>
-      <Header name={name}/>
-      <Content parts={parts}/>
-    </div>
-  ) 
-}
+import Course from './components/Course.js'
 
 const Courses=(props)=>{
   const {courses} = props
