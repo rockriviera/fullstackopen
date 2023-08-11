@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import './App.css';
+import PersonForm from './components/PersonForm';
+import RenderPhoneBook from './components/RenderPhoneBook';
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -10,15 +12,11 @@ const App = () => {
   ])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const Person =(props) =>{
-    return(
-      <li>{props.name} {props.number}</li>
-    )
-  }
 
-  const existingPerson =()=>{
-
+  const existingPerson =()=>{ 
     return persons.find(
+    
+    
       (person) => person.name.toLowerCase()===newName.toLowerCase()
     )
   }
@@ -53,29 +51,16 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name:
-          <input 
-          value={newName}
-          onChange ={handleNameChange}
-          />
-        </div>
-        <div>
-          number:
-          <input 
-          value={newNumber}
-          onChange ={handleNumberChange}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm personForm
+        addPerson={addPerson} 
+        newName={newName} 
+        newNumber={newNumber} 
+        handleNameChange={handleNameChange} 
+        handleNumberChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
         <ul>
-          {persons.map(person=>
-            <Person key={person.name} name={person.name} number={person.number}/>)}
+          <RenderPhoneBook renderPhoneBook persons={persons}/>
         </ul>
     </div>
   )
