@@ -42,14 +42,14 @@ const App = () => {
       number: newNumber
     }
 
-    setPersons(persons.concat(newPerson))
     personsService
       .create(newPerson)
       .then(newPerson => {
+        setPersons(persons.concat(newPerson))
         console.log(`adding new person`,newPerson)
+        setNewName('')
+        setNewNumber('')
     })
-    setNewName('')
-    setNewNumber('')
   }
 
   const handleDelete=({props})=>{
@@ -60,7 +60,7 @@ const App = () => {
       .then( response=>{
         setPersons(persons.filter(person => person.id !== props.id))
         console.log(`removed name: ${props.name} with id: ${props.id}`)})
-        .catch(error=>console.log('fail'))
+        .catch(error=>console.log(`failed to remove ${props.name} with id: ${props.id}`))
       }
     }
   
