@@ -2,7 +2,8 @@ import { useState, useEffect} from 'react'
 import './App.css';
 import PersonForm from './components/PersonForm';
 import RenderPhoneBook from './components/RenderPhoneBook';
-import axios from 'axios'
+
+import personsService from './services/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -10,17 +11,18 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
 
   useEffect(()=>{
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    personsService
+    .getAll()
+      .then(fetchedPersons => {
+        setPersons(fetchedPersons)
+    }).catch(error => {
+      console.log('fail')
     })
 
 },[])
+
   const existingPerson =()=>{ 
     return persons.find(
-    
-
       (person) => person.name.toLowerCase()===newName.toLowerCase()
     )
   }
@@ -35,14 +37,33 @@ const App = () => {
       alert (`Both fields required`)
       return
     }
-    const nameObject = {
+    const newPerson = {
       name: newName,
       number: newNumber
     }
 
-    setPersons(persons.concat(nameObject))
+    setPersons(persons.concat(newPerson))
+    personsService
+      .create(newPerson)
+      .then(newPerson => {
+        console.log(`adding new person`,newPerson)
+    })
     setNewName('')
+    setNewNumber('')
   }
+
+  const handleDelete=({props})=>{
+    if (window.confirm(`Delete ${props.name}?`)) {
+      personsService.getAll()
+      personsService
+      .remove(props.id)
+      .then( response=>{
+        setPersons(persons.filter(person => person.id !== props.id))
+        console.log(`removed name: ${props.name} with id: ${props.id}`)})
+        .catch(error=>console.log('fail'))
+      }
+    }
+  
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -55,6 +76,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <h2>Add a new person</h2>
       <PersonForm personForm
         addPerson={addPerson} 
         newName={newName} 
@@ -64,7 +86,7 @@ const App = () => {
       />
       <h2>Numbers</h2>
         <ul>
-          <RenderPhoneBook renderPhoneBook persons={persons}/>
+          <RenderPhoneBook renderPhoneBook persons={persons} onClick={handleDelete}/>
         </ul>
     </div>
   )
