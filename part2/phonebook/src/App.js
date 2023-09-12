@@ -1,5 +1,6 @@
 import { useState, useEffect} from 'react'
 import './App.css';
+import Notification from './components/Notification';
 import PersonForm from './components/PersonForm';
 import RenderPhoneBook from './components/RenderPhoneBook';
 
@@ -9,6 +10,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [errorMessage, setSuccessMessage] = useState(null)
 
   useEffect(()=>{
     personsService
@@ -46,9 +48,13 @@ const App = () => {
       .create(newPerson)
       .then(newPerson => {
         setPersons(persons.concat(newPerson))
+        setSuccessMessage(`adding new person`,newPerson)
         console.log(`adding new person`,newPerson)
         setNewName('')
         setNewNumber('')
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
     })
   }
 
@@ -76,6 +82,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage}/>
       <h2>Add a new person</h2>
       <PersonForm personForm
         addPerson={addPerson} 
