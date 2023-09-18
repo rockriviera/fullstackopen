@@ -1,5 +1,6 @@
 import { useState, useEffect} from 'react'
 import './App.css';
+import Notification from './components/Notification';
 import PersonForm from './components/PersonForm';
 import RenderPhoneBook from './components/RenderPhoneBook';
 
@@ -9,6 +10,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [errorMessage, setSuccessMessage] = useState(null)
 
   useEffect(()=>{
     personsService
@@ -42,14 +44,18 @@ const App = () => {
       number: newNumber
     }
 
-    setPersons(persons.concat(newPerson))
     personsService
       .create(newPerson)
       .then(newPerson => {
+        setPersons(persons.concat(newPerson))
+        setSuccessMessage(`adding new person`,newPerson)
         console.log(`adding new person`,newPerson)
+        setNewName('')
+        setNewNumber('')
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
     })
-    setNewName('')
-    setNewNumber('')
   }
 
   const handleDelete=({props})=>{
@@ -60,7 +66,7 @@ const App = () => {
       .then( response=>{
         setPersons(persons.filter(person => person.id !== props.id))
         console.log(`removed name: ${props.name} with id: ${props.id}`)})
-        .catch(error=>console.log('fail'))
+        .catch(error=>console.log(`failed to remove ${props.name} with id: ${props.id}`))
       }
     }
   
@@ -76,6 +82,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage}/>
       <h2>Add a new person</h2>
       <PersonForm personForm
         addPerson={addPerson} 
