@@ -58,11 +58,44 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
-  const person = request.body
+  const body = request.body
+  console.log(request.body)
+  if (!body.name||!body.number) {
+    return response.status(400).json({ 
+      error: 'person name and/or number not fully provided' 
+    })
+  }
+
+  if (existingName(body.name)) {
+    return response.status(400).json({ 
+      error: 'person name must be unique' 
+    })
+  }
+
+  const person = {
+    id:generateId(),
+    name:body.name,
+    number:body.number
+  }
+  persons=persons.concat(person)
   console.log(person)
   response.json(person)
 })
 
+const existingName =(name)=>{
+  return persons.find(person=> person.name==name)
+  }
+
+const generateId = () => {
+  newId=1
+  do{
+    newId=Math.floor(Math.random() * (1000000 - 1) + 1)
+    console.log(newId)
+  }
+  while(persons.find(person=> person.id==newId))
+  return newId
+
+}
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
