@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
 app.use(express.json())
+const logger = require('morgan')
+logger.token('body', req=> JSON.stringify(req.body))
+app.use(logger(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
     { 
@@ -59,7 +62,6 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  console.log(request.body)
   if (!body.name||!body.number) {
     return response.status(400).json({ 
       error: 'person name and/or number not fully provided' 
@@ -78,7 +80,6 @@ app.post('/api/persons', (request, response) => {
     number:body.number
   }
   persons=persons.concat(person)
-  console.log(person)
   response.json(person)
 })
 
@@ -96,6 +97,23 @@ const generateId = () => {
   return newId
 
 }
+
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+app.use(requestLogger)
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint)
+
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
